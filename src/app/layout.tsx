@@ -41,6 +41,15 @@ export default function RootLayout({
                 if (shouldBeDark) {
                   document.documentElement.classList.add('dark');
                 }
+
+                // Suprimir erro do ResizeObserver
+                window.addEventListener('error', function(e) {
+                  if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    return false;
+                  }
+                });
               })();
             `,
           }}

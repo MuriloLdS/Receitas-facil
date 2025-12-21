@@ -29,6 +29,21 @@ export default function ResetPasswordPage() {
       }
     };
     checkSession();
+
+    // Suprime erro do ResizeObserver
+    const resizeObserverErrorHandler = (e: ErrorEvent) => {
+      if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+        e.stopImmediatePropagation();
+        return true;
+      }
+      return false;
+    };
+
+    window.addEventListener('error', resizeObserverErrorHandler);
+
+    return () => {
+      window.removeEventListener('error', resizeObserverErrorHandler);
+    };
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,7 +122,7 @@ export default function ResetPasswordPage() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
-                  className="h-12 rounded-xl border-gray-200 focus:border-orange-400 focus:ring-orange-400 pr-12 text-gray-900"
+                  className="h-12 rounded-xl border-gray-200 focus:border-orange-400 focus:ring-orange-400 pr-12 text-[#000000]"
                 />
                 <button
                   type="button"
@@ -136,7 +151,7 @@ export default function ResetPasswordPage() {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required
-                  className="h-12 rounded-xl border-gray-200 focus:border-orange-400 focus:ring-orange-400 pr-12 text-gray-900"
+                  className="h-12 rounded-xl border-gray-200 focus:border-orange-400 focus:ring-orange-400 pr-12 text-[#000000]"
                 />
                 <button
                   type="button"
