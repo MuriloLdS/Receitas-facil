@@ -7,15 +7,17 @@ export interface AuthResponse {
   requiresConfirmation?: boolean;
 }
 
-// Login com Google OAuth
+// Login com Google OAuth - CORRIGIDO para evitar erro 403
 export async function signInWithGoogle(): Promise<AuthResponse> {
   try {
     console.log('🔄 Iniciando login com Google...');
 
+    // CORREÇÃO: Removido redirectTo customizado para usar o callback padrão do Supabase
+    // Isso evita erro 403 do Google em URLs dinâmicas de preview
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        // Removido redirectTo - Supabase usa o callback configurado no dashboard
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
