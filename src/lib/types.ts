@@ -34,6 +34,7 @@ export interface Recipe {
   fats?: number;
   isHealthy?: boolean;
   tags?: string[];
+  imageUrl?: string; // URL da imagem da receita pronta
 }
 
 export interface WeeklyMealPlan {

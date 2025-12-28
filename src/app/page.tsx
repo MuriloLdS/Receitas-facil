@@ -27,16 +27,24 @@ export default function Home() {
 
   // Verifica se usuário já está autenticado
   useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
+        if (session && isMounted) {
           router.push('/dashboard');
         }
       } catch (error) {
-        console.error('Erro ao verificar autenticação:', error);
+        // Ignora erros de rede durante navegação/redirecionamento
+        if (isMounted && error instanceof Error && !error.message.includes('aborted')) {
+          console.error('Erro ao verificar autenticação:', error);
+        }
       } finally {
-        setIsCheckingAuth(false);
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
       }
     };
 
@@ -54,6 +62,8 @@ export default function Home() {
     window.addEventListener('error', resizeObserverErrorHandler);
 
     return () => {
+      isMounted = false;
+      abortController.abort();
       window.removeEventListener('error', resizeObserverErrorHandler);
     };
   }, [router]);
@@ -68,16 +78,16 @@ export default function Home() {
       if (!result.success) {
         setErrorMessage(result.message);
         toast.error(result.message);
+        setIsGoogleLoading(false);
       }
       // Se sucesso, o usuário será redirecionado automaticamente pelo OAuth
+      // Mantém loading até o redirect acontecer
     } catch (error) {
       console.error('💥 Erro inesperado no login Google:', error);
       const errorMsg = 'Erro ao conectar com Google. Tente novamente.';
       setErrorMessage(errorMsg);
       toast.error(errorMsg);
-    } finally {
-      // Mantém loading até o redirect acontecer
-      // setIsGoogleLoading(false); - removido para manter loading durante redirect
+      setIsGoogleLoading(false);
     }
   };
 
